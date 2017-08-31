@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+ classpath:mapper/ProjectTypeMapper.xml
+ -->
+<mapper namespace="cn.tedu.ttms.product.dao.ProductTypeDao">
+   
+    <select id="findObjects" resultType="map">
+         select c.*,p.name parentName
+         from tms_classes c left join tms_classes p
+         on c.parentId=p.id
+    </select>
+    
+    <!-- 查询zTree树中需要的节点信息 -->
+    <select id="findTreeNodes" resultType="map">
+         select id,name,parentIdfrom tms_classes;
+    </select>
+    
+    <insert id="insertObject" parameterType="cn.tedu.ttms.product.entity.ProductType">
+         insert into tms_classes(
+         name,
+         sort,
+         parentId,
+         note,
+         createdUser,
+         modifiedUser,
+         createdTime,
+         modifiedTime
+         )values(
+         #{name},
+         #{sort},
+         #{parentId},
+         #{note},
+         #{createdUser},
+         #{modifiedUser},
+         now(),
+         now())
+    </insert>
+    
+    <update id="updateObject" parameterType="cn.tedu.ttms.product.entity.ProductType">
+      update tms_classes
+      set 
+      name=#{name},
+      parentId=#{parentId},
+      sort=#{sort},
+      note=#{note},
+      modifiedUser=#{modifiedUser},
+      modifiedTime=NOW()
+      where id=#{id} 
+    </update>
+    
+    <!-- 根据id查找某个对象 -->
+    <select id="findObjectById" parameterType="java.lang.Integer" resultType="map">
+       select c.*,p.name parentName
+       from tms_classes c left join tms_classes p
+       on c.parentId=p.id where c.id=#{id}
+    </select>
+    
+    <!-- 求当前分类下有没有子元素 -->
+    <select id="hasChilds" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select count(*) from tms_classes where parentId=#{id};
+    </select>
+    
+    <!-- 根据id执行删除动作 -->
+    <delete id="deleteObject" parameterType="java.lang.Integer">
+       delete from tms_classes where id=#{id}
+    </delete>
+    
+</mapper> 
+
+
+
